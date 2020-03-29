@@ -2,7 +2,8 @@ const button = document.querySelectorAll('.button'),
       display = document.querySelector('.display'),
       clear = document.querySelector('.clear'),
       support = document.querySelectorAll('.support'),
-      shiftButton = document.querySelector('.js-shift');
+      shiftButton = document.querySelector('.js-shift'),
+      cursor = '_';
 let upper; //индикатор включенности шифта
 
 //Возвращает заглавный символ
@@ -22,15 +23,14 @@ const toShift = (up) => {
 };
 
 const toAddText = (context = '') => {
-    display.innerHTML += context + '|';
+    display.innerHTML += context + cursor;
 };
 
 //Функция удаления последнего символа
 const toDel = (dir = '') => {
     if (!dir) {
         display.innerText = display.innerText.slice(0, -1);
-    }
-    
+    }   
 };
 
 //Прослушка вспомогательных кнопок
@@ -76,7 +76,6 @@ button.forEach (item => {
                 toDel();
                 toAddText(item.textContent);
             }
-            
         }
         
         //Если нажали Энтер, то делаем перенос строки
@@ -89,16 +88,15 @@ button.forEach (item => {
         if (item.dataset.index == '36') {
             toShift('+');
         }
-
     });
 });
 
 //Кнопка удаления всего на дисплее
 clear.addEventListener('click', () => {
-    display.textContent = '|';
+    display.textContent = cursor;
     toShift('+');
 });
 
 //Пустой дисплей с текстовым курсором и активным шифтом
-display.textContent = '|'; 
+display.textContent = cursor; 
 toShift('+');
