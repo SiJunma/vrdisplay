@@ -132,6 +132,7 @@ body {
   
   .space {
     height: 40px;
+    width: 50%;
   }
   
   .space::after {
