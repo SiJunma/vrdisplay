@@ -1,78 +1,104 @@
 const button = document.querySelectorAll('.button'),
       display = document.querySelector('.display'),
       clear = document.querySelector('.clear'),
-      support = document.querySelectorAll('.support');
-let upper;
+      support = document.querySelectorAll('.support'),
+      shiftButton = document.querySelector('.js-shift');
+let upper; //индикатор включенности шифта
 
-const shift = (item) => {
+//Возвращает заглавный символ
+const toUpper = (item) => {
     return item.textContent.toUpperCase();
 };
 
-display.textContent = '|';
+//Делает кнопку шифт активной или неактивной
+const toShift = (up) => {
+    if (up == '+') {
+        shiftButton.classList.add('active');
+        upper = '+';
+    } else {
+        shiftButton.classList.remove('active');
+        upper = '-'; 
+    }
+};
 
+const toAddText = (context = '') => {
+    display.innerHTML += context + '|';
+};
+
+//Функция удаления последнего символа
+const toDel = (dir = '') => {
+    if (!dir) {
+        display.innerText = display.innerText.slice(0, -1);
+    }
+    
+};
+
+//Прослушка вспомогательных кнопок
 support.forEach (item => {
     item.addEventListener('click', () => {
-        if (item.dataset.index == '34') {
-            
-                if (item.classList.contains('active')) {
-                    item.classList.remove('active');
-                    upper = '-';
+        
+        //Если это кнопка шифт
+        if (shiftButton) {
+                if (shiftButton.classList.contains('active')) {
+                    toShift('-');
                 } else {
-                    item.classList.add('active');
-                    upper = '+';
+                    toShift('+');
                 }
         }
 
+        //Если это кнопка стереть
         if (item.dataset.index == '35') {
-            display.innerText = display.innerText.slice(0, -1);
-            display.innerText = display.innerText.slice(0, -1);
-            display.innerHTML += '|'; 
+            toDel(); //удаляет сначала курсор
+            toDel(); //а потом сам символ
+            toAddText(); 
+            toShift('-'); //Если стираем после нажатия точки (у нее автоматический шифт)
+            
+            //Если мы стерли весь текстовый контент, то активируем шифт.
+            if (display.textContent.length == '1') {
+                toShift('+');
+            }
         }
     });
 });
 
+//Прослушка всех кнопок
 button.forEach (item => {
-
     item.addEventListener('click', () => {
+
+        //Все кноки, кроме вспомогательных
         if (!item.classList.contains('support')) {
+            //Индикация активности шифта
             if (upper == '+') {
-                display.innerText = display.innerText.slice(0, -1);
-                display.innerHTML += shift(item) + '|';
-
-                for (let i of button) {
-                    if (i.dataset.index == '34') {
-                        i.classList.remove('active');
-                        upper = '-';
-                    }
-                };
-
+                toDel();
+                toAddText(toUpper(item));
+                toShift('-');
             } else {
-                display.innerText = display.innerText.slice(0, -1);
-                display.innerHTML += item.textContent + '|';
+                toDel();
+                toAddText(item.textContent);
             }
             
         }
         
+        //Если нажали Энтер, то делаем перенос строки
         if (item.dataset.index == '38') {
-            display.innerText = display.innerText.slice(0, -1);
-            display.innerHTML += '<br>' + '|';
+            toDel();
+            toAddText('<br>');
         }
 
+        //Если нажали точку, то добавляем активацию шифта
         if (item.dataset.index == '36') {
-            display.innerText = display.innerText.slice(0, -1);
-            display.innerText += '|';
-            upper = '+'
-
-            for (let i of button) {
-                if (i.dataset.index == '34') {
-                    i.classList.add('active');
-                }
-            };
+            toShift('+');
         }
 
     });
 });
 
+//Кнопка удаления всего на дисплее
 clear.addEventListener('click', () => {
     display.textContent = '|';
+    toShift('+');
 });
+
+//Пустой дисплей с текстовым курсором и активным шифтом
+display.textContent = '|'; 
+toShift('+');
