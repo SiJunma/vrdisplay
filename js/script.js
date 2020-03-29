@@ -3,25 +3,30 @@ const button = document.querySelectorAll('.button'),
       clear = document.querySelector('.clear'),
       support = document.querySelectorAll('.support'),
       shiftButton = document.querySelector('.js-shift'),
+      capsButton = document.querySelector('.caps'),
       cursor = '_';
-let upper; //индикатор включенности шифта
-
-//Возвращает заглавный символ
-const toUpper = (item) => {
-    return item.textContent.toUpperCase();
-};
 
 //Делает кнопку шифт активной или неактивной
 const toShift = (up) => {
     if (up == '+') {
         shiftButton.classList.add('active');
-        upper = '+';
+        for (let item of button) {
+            if (!item.classList.contains('support')) {
+                item.textContent = item.textContent.toUpperCase();
+            }
+        } 
+            
     } else {
         shiftButton.classList.remove('active');
-        upper = '-'; 
+        for (let item of button) {
+            if (!item.classList.contains('support')) {
+                item.textContent = item.textContent.toLowerCase();
+            }
+        } 
     }
 };
 
+//Функция добавления контента
 const toAddText = (context = '') => {
     display.innerHTML += context + cursor;
 };
@@ -33,44 +38,43 @@ const toDel = (dir = '') => {
     }   
 };
 
-//Прослушка вспомогательных кнопок
-support.forEach (item => {
-    item.addEventListener('click', () => {
-        
-        //Если это кнопка шифт
-        if (shiftButton) {
-                if (shiftButton.classList.contains('active')) {
-                    toShift('-');
-                } else {
-                    toShift('+');
-                }
-        }
-
-        //Если это кнопка стереть
-        if (item.dataset.index == '35') {
-            toDel(); //удаляет сначала курсор
-            toDel(); //а потом сам символ
-            toAddText(); 
-            toShift('-'); //Если стираем после нажатия точки (у нее автоматический шифт)
-            
-            //Если мы стерли весь текстовый контент, то активируем шифт.
-            if (display.textContent.length == '1') {
-                toShift('+');
-            }
-        }
-    });
-});
-
 //Прослушка всех кнопок
 button.forEach (item => {
     item.addEventListener('click', () => {
 
-        //Все кноки, кроме вспомогательных
-        if (!item.classList.contains('support')) {
+        //Если это вспомогательные кнопки
+        if (item.classList.contains('support')) {
+            //Если это кнопка шифт
+            if (shiftButton.classList.contains('js-shift')) {
+                    if (shiftButton.classList.contains('active')) {
+                        toShift('-');
+                    } else {
+                        toShift('+');
+                    }
+            }
+    
+            //Если это кнопка стереть
+            if (item.dataset.index == '35') {
+                toDel(); //удаляет сначала курсор
+                toDel(); //а потом сам символ
+                toAddText(); 
+                toShift('-'); //Если стираем после нажатия точки (у нее автоматический шифт)
+                
+                //Если мы стерли весь текстовый контент, то активируем шифт.
+                if (display.textContent.length == '1') {
+                    toShift('+');
+                }
+            }
+        } else {
             //Индикация активности шифта
-            if (upper == '+') {
+            if (shiftButton.classList.contains('active') && capsButton.classList.contains('active')) {
                 toDel();
-                toAddText(toUpper(item));
+                toAddText(item.textContent);
+            }
+
+            if (shiftButton.classList.contains('active') && !capsButton.classList.contains('active')) {
+                toDel();
+                toAddText(item.textContent);
                 toShift('-');
             } else {
                 toDel();
@@ -95,6 +99,19 @@ button.forEach (item => {
 clear.addEventListener('click', () => {
     display.textContent = cursor;
     toShift('+');
+});
+
+//Активация капслока
+capsButton.addEventListener('click', () => {
+    if (capsButton.classList.contains('caps')) {
+        if (capsButton.classList.contains('active')) {
+            toShift('-');
+            capsButton.classList.remove('active');
+        } else {
+            toShift('+');
+            capsButton.classList.add('active'); 
+        }
+    }
 });
 
 //Пустой дисплей с текстовым курсором и активным шифтом
