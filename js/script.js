@@ -1,12 +1,14 @@
 const button = document.querySelectorAll('.button'),
       display = document.querySelector('.display'),
-      clear = document.querySelector('.clear');
-const support = document.querySelectorAll('.support');
+      clear = document.querySelector('.clear'),
+      support = document.querySelectorAll('.support');
 let upper;
 
 const shift = (item) => {
     return item.textContent.toUpperCase();
 };
+
+display.textContent = '|';
 
 support.forEach (item => {
     item.addEventListener('click', () => {
@@ -22,25 +24,55 @@ support.forEach (item => {
         }
 
         if (item.dataset.index == '35') {
-            let text = display.innerText;
-            display.innerText = text.slice(0, -1); 
+            display.innerText = display.innerText.slice(0, -1);
+            display.innerText = display.innerText.slice(0, -1);
+            display.innerHTML += '|'; 
         }
     });
 });
 
 button.forEach (item => {
+
     item.addEventListener('click', () => {
-        if (item.dataset.index !== '34' && item.dataset.index !== '35') {
+        if (!item.classList.contains('support')) {
             if (upper == '+') {
-                display.textContent += shift(item);
+                display.innerText = display.innerText.slice(0, -1);
+                display.innerHTML += shift(item) + '|';
+
+                for (let i of button) {
+                    if (i.dataset.index == '34') {
+                        i.classList.remove('active');
+                        upper = '-';
+                    }
+                };
+
             } else {
-                display.textContent += item.textContent;
+                display.innerText = display.innerText.slice(0, -1);
+                display.innerHTML += item.textContent + '|';
             }
             
-        } 
+        }
+        
+        if (item.dataset.index == '38') {
+            display.innerText = display.innerText.slice(0, -1);
+            display.innerHTML += '<br>' + '|';
+        }
+
+        if (item.dataset.index == '36') {
+            display.innerText = display.innerText.slice(0, -1);
+            display.innerText += '|';
+            upper = '+'
+
+            for (let i of button) {
+                if (i.dataset.index == '34') {
+                    i.classList.add('active');
+                }
+            };
+        }
+
     });
 });
 
 clear.addEventListener('click', () => {
-    display.textContent = '';
+    display.textContent = '|';
 });
