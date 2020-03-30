@@ -3,7 +3,7 @@ const button = document.querySelectorAll('.button'),
       clear = document.querySelector('.clear'),
       support = document.querySelectorAll('.support'),
       shiftButton = document.querySelector('.js-shift'),
-      capsButton = document.querySelector('.caps'),
+      capsButton = document.querySelector('.caps-button'),
       cursor = '_';
 
 //Делает кнопку шифт активной или неактивной
@@ -45,9 +45,10 @@ button.forEach (item => {
         //Если это вспомогательные кнопки
         if (item.classList.contains('support')) {
             //Если это кнопка шифт
-            if (shiftButton.classList.contains('js-shift')) {
+            if (item.dataset.index == '34' && shiftButton.classList.contains('js-shift')) {
                     if (shiftButton.classList.contains('active')) {
                         toShift('-');
+                        capsButton.classList.remove('active');
                     } else {
                         toShift('+');
                     }
@@ -65,33 +66,42 @@ button.forEach (item => {
                     toShift('+');
                 }
             }
+
+            //Если нажали Энтер, то делаем перенос строки
+            if (item.dataset.index == '38') {
+                toDel();
+                toAddText('<br>');
+                toShift('+');
+            }
+
         } else {
             //Индикация активности шифта
             if (shiftButton.classList.contains('active') && capsButton.classList.contains('active')) {
                 toDel();
                 toAddText(item.textContent);
+                return
             }
 
             if (shiftButton.classList.contains('active') && !capsButton.classList.contains('active')) {
                 toDel();
                 toAddText(item.textContent);
                 toShift('-');
-            } else {
+                return
+            } 
+            
+            if (!shiftButton.classList.contains('active') && !capsButton.classList.contains('active')) {
                 toDel();
                 toAddText(item.textContent);
+
+                //Если нажали точку, то добавляем активацию шифта
+                if (item.dataset.index == '36') {
+                    toShift('+');
+                }
+                return
             }
         }
-        
-        //Если нажали Энтер, то делаем перенос строки
-        if (item.dataset.index == '38') {
-            toDel();
-            toAddText('<br>');
-        }
 
-        //Если нажали точку, то добавляем активацию шифта
-        if (item.dataset.index == '36') {
-            toShift('+');
-        }
+
     });
 });
 
@@ -103,14 +113,13 @@ clear.addEventListener('click', () => {
 
 //Активация капслока
 capsButton.addEventListener('click', () => {
-    if (capsButton.classList.contains('caps')) {
-        if (capsButton.classList.contains('active')) {
-            toShift('-');
-            capsButton.classList.remove('active');
-        } else {
-            toShift('+');
-            capsButton.classList.add('active'); 
-        }
+    if (capsButton.classList.contains('active')) {
+        toShift('-');
+        capsButton.classList.remove('active');
+    } 
+    else {
+        toShift('+');
+        capsButton.classList.add('active'); 
     }
 });
 
